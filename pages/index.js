@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -17,11 +18,11 @@ export default function Home() {
 
   // Memory Match
   const baseEmojis = ['❤️', '💑', '😘', '💕', '🌹', '💏', '🥰', '💖'];
-  const fullEmojis = [...baseEmojis, ...baseEmojis]; // 16 kartu, 8 pasangan
+  const fullEmojis = [...baseEmojis, ...baseEmojis];
   const [memoryCards, setMemoryCards] = useState([]);
   const [memoryFlipped, setMemoryFlipped] = useState([]);
   const [memoryMatches, setMemoryMatches] = useState(0);
-  const [memoryTimeLeft, setMemoryTimeLeft] = useState(180); // 3 menit
+  const [memoryTimeLeft, setMemoryTimeLeft] = useState(180);
   const [memoryTimerActive, setMemoryTimerActive] = useState(false);
   const [memoryGameOver, setMemoryGameOver] = useState(false);
 
@@ -73,7 +74,9 @@ export default function Home() {
   // Timer countdown
   useEffect(() => {
     if (memoryTimerActive && memoryTimeLeft > 0 && memoryMatches < 8) {
-      const timer = setTimeout(() => setMemoryTimeLeft(memoryTimeLeft - 1), 1000);
+      const timer = setTimeout(() => {
+        setMemoryTimeLeft(memoryTimeLeft - 1);
+      }, 1000);
       return () => clearTimeout(timer);
     } else if (memoryTimeLeft === 0 && memoryTimerActive) {
       setMemoryGameOver(true);
@@ -81,7 +84,7 @@ export default function Home() {
     }
   }, [memoryTimeLeft, memoryTimerActive, memoryMatches]);
 
-  // Format waktu
+  // Format waktu MM:SS
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -169,35 +172,11 @@ export default function Home() {
             boxShadow: '0 10px 40px rgba(0,0,0,0.6)'
           }}>
             <form onSubmit={handleSubmit}>
-              <input
-                placeholder="Nama kamu"
-                value={nama1}
-                onChange={(e) => setNama1(e.target.value)}
-                required
-                style={{ width: '100%', padding: '18px', margin: '12px 0', background: '#374151', border: 'none', borderRadius: '16px', color: '#f3f4f6', fontSize: '18px' }}
-              />
-              <input
-                placeholder="Nama pasanganmu"
-                value={nama2}
-                onChange={(e) => setNama2(e.target.value)}
-                required
-                style={{ width: '100%', padding: '18px', margin: '12px 0', background: '#374151', border: 'none', borderRadius: '16px', color: '#f3f4f6', fontSize: '18px' }}
-              />
-              <button
-                type="submit"
-                disabled={loading}
-                style={{
-                  width: '100%',
-                  padding: '18px',
-                  marginTop: '20px',
-                  background: '#f43f5e',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '16px',
-                  fontSize: '20px',
-                  fontWeight: 'bold'
-                }}
-              >
+              <input placeholder="Nama kamu" value={nama1} onChange={(e) => setNama1(e.target.value)} required style={{ width: '100%', padding: '18px', margin: '12px 0', background: '#374151', border: 'none', borderRadius: '16px', color: '#f3f4f6', fontSize: '18px' }} />
+              <input placeholder="Nama pasanganmu" value={nama2} onChange={(e) => setNama2(e.target.value)} required style={{ width: '100%', padding: '18px', margin: '12px 0', background: '#374151', border: 'none', borderRadius: '16px', color: '#f3f4f6', fontSize: '18px' }} />
+              <button type="submit" disabled={loading} style={{
+                width: '100%', padding: '18px', marginTop: '20px', background: '#f43f5e', color: '#ffffff', border: 'none', borderRadius: '16px', fontSize: '20px', fontWeight: 'bold'
+              }}>
                 {loading ? 'Menghitung...' : 'Cek Sekarang'}
               </button>
             </form>
@@ -218,10 +197,7 @@ export default function Home() {
                 {result}%
               </div>
 
-              <button
-                onClick={() => setShowGamesMenu(true)}
-                style={{ marginTop: '80px', fontSize: '100px', background: 'none', border: 'none', cursor: 'pointer' }}
-              >
+              <button onClick={() => setShowGamesMenu(true)} style={{ marginTop: '80px', fontSize: '100px', background: 'none', border: 'none', cursor: 'pointer' }}>
                 🎮
               </button>
             </>
@@ -243,16 +219,10 @@ export default function Home() {
         }}>
           <h2 style={{ fontSize: '40px', color: '#f43f5e', marginBottom: '40px' }}>Pilih Game Seru!</h2>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
-            <button
-              onClick={() => { setCurrentGame('ttt'); setShowGamesMenu(false); }}
-              style={{ padding: '40px', fontSize: '24px', background: '#374151', color: '#f3f4f6', borderRadius: '20px', border: 'none' }}
-            >
+            <button onClick={() => { setCurrentGame('ttt'); setShowGamesMenu(false); }} style={{ padding: '40px', fontSize: '24px', background: '#374151', color: '#f3f4f6', borderRadius: '20px', border: 'none' }}>
               Tic-Tac-Toe
             </button>
-            <button
-              onClick={() => { setCurrentGame('memory'); setShowGamesMenu(false); startMemoryGame(); }}
-              style={{ padding: '40px', fontSize: '24px', background: '#374151', color: '#f3f4f6', borderRadius: '20px', border: 'none' }}
-            >
+            <button onClick={() => { setCurrentGame('memory'); setShowGamesMenu(false); startMemoryGame(); }} style={{ padding: '40px', fontSize: '24px', background: '#374151', color: '#f3f4f6', borderRadius: '20px', border: 'none' }}>
               Memory Match
             </button>
           </div>
@@ -342,4 +312,4 @@ export default function Home() {
       )}
     </div>
   );
-    }
+}
