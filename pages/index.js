@@ -1,6 +1,5 @@
+
 import { useState } from 'react';
-import Head from 'next/head';
-import styles from '../styles/Home.module.css';
 
 export default function Home() {
   const [nama1, setNama1] = useState('');
@@ -25,40 +24,87 @@ export default function Home() {
   };
 
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Cek Jodoh App</title>
-        <meta name="description" content="Cek kecocokan nama pasangan" />
-      </Head>
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(to bottom, #ff9a9e, #fad0c4)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: 'Arial, sans-serif',
+      padding: '20px'
+    }}>
+      <h1 style={{ fontSize: '48px', color: '#fff', marginBottom: '10px' }}>
+        ❤️ Cek Jodoh ❤️
+      </h1>
+      <p style={{ fontSize: '20px', color: '#fff', marginBottom: '40px' }}>
+        Masukkan dua nama untuk hitung kecocokan
+      </p>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>Cek Jodoh</h1>
-        <p className={styles.description}>Masukkan dua nama untuk hitung kecocokan</p>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <input
+          type="text"
+          placeholder="Nama pertama (contoh: Sena )"
+          value={nama1}
+          onChange={(e) => setNama1(e.target.value)}
+          required
+          style={{
+            padding: '15px',
+            margin: '10px',
+            width: '350px',
+            maxWidth: '90%',
+            fontSize: '18px',
+            borderRadius: '10px',
+            border: 'none'
+          }}
+        />
+        <input
+          type="text"
+          placeholder="Nama kedua (contoh: Icha)"
+          value={nama2}
+          onChange={(e) => setNama2(e.target.value)}
+          required
+          style={{
+            padding: '15px',
+            margin: '10px',
+            width: '350px',
+            maxWidth: '90%',
+            fontSize: '18px',
+            borderRadius: '10px',
+            border: 'none'
+          }}
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            padding: '15px 40px',
+            fontSize: '20px',
+            background: '#ff6b6b',
+            color: 'white',
+            border: 'none',
+            borderRadius: '10px',
+            cursor: 'pointer',
+            marginTop: '20px'
+          }}
+        >
+          {loading ? 'Menghitung...' : 'Cek Jodoh'}
+        </button>
+      </form>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <input
-            type="text"
-            placeholder="Nama pertama (contoh: Hasena Rashid)"
-            value={nama1}
-            onChange={(e) => setNama1(e.target.value)}
-            required
-            className={styles.input}
-          />
-          <input
-            type="text"
-            placeholder="Nama kedua (contoh: Icha Dewi Cahya)"
-            value={nama2}
-            onChange={(e) => setNama2(e.target.value)}
-            required
-            className={styles.input}
-          />
-          <button type="submit" disabled={loading} className={styles.button}>
-            {loading ? 'Menghitung...' : 'Cek Jodoh'}
-          </button>
-        </form>
-
-        {result && <div className={styles.result}>{result}</div>}
-      </main>
+      {result && (
+        <div style={{
+          marginTop: '50px',
+          padding: '30px',
+          background: 'rgba(255,255,255,0.9)',
+          borderRadius: '20px',
+          fontSize: '48px',
+          fontWeight: 'bold',
+          color: '#ff6b6b'
+        }}>
+          {result}
+        </div>
+      )}
     </div>
   );
-    }
+}
