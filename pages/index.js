@@ -19,7 +19,7 @@ export default function Home() {
     });
 
     const data = await res.json();
-    setResult(`Hasil kecocokan: ${data.result}`);
+    setResult(`Hasil kecocokan: ${data.result}% ❤️`);
     setLoading(false);
   };
 
@@ -32,75 +32,83 @@ export default function Home() {
       alignItems: 'center',
       justifyContent: 'center',
       fontFamily: 'Arial, sans-serif',
-      padding: '20px'
+      padding: '20px',
+      color: '#333'
     }}>
-      <h1 style={{ fontSize: '48px', color: '#fff', marginBottom: '10px' }}>
+      <h1 style={{ fontSize: '50px', color: '#fff', marginBottom: '10px', textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>
         ❤️ Cek Jodoh ❤️
       </h1>
-      <p style={{ fontSize: '20px', color: '#fff', marginBottom: '40px' }}>
-        Masukkan dua nama untuk hitung kecocokan
+      <p style={{ fontSize: '22px', color: '#fff', marginBottom: '40px' }}>
+        Masukkan dua nama untuk melihat kecocokan kalian
       </p>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <input
           type="text"
-          placeholder="Nama pertama (contoh: Sena )"
+          placeholder="Nama pertama (contoh: Hasena Rashid)"
           value={nama1}
           onChange={(e) => setNama1(e.target.value)}
           required
           style={{
             padding: '15px',
-            margin: '10px',
-            width: '350px',
+            margin: '10px 0',
+            width: '380px',
             maxWidth: '90%',
             fontSize: '18px',
-            borderRadius: '10px',
-            border: 'none'
+            borderRadius: '15px',
+            border: 'none',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
           }}
         />
         <input
           type="text"
-          placeholder="Nama kedua (contoh: Icha)"
+          placeholder="Nama kedua (contoh: Icha Dewi Cahya)"
           value={nama2}
           onChange={(e) => setNama2(e.target.value)}
           required
           style={{
             padding: '15px',
-            margin: '10px',
-            width: '350px',
+            margin: '10px 0',
+            width: '380px',
             maxWidth: '90%',
             fontSize: '18px',
-            borderRadius: '10px',
-            border: 'none'
+            borderRadius: '15px',
+            border: 'none',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
           }}
         />
         <button
           type="submit"
           disabled={loading}
           style={{
-            padding: '15px 40px',
+            padding: '15px 50px',
             fontSize: '20px',
-            background: '#ff6b6b',
+            background: '#ff4757',
             color: 'white',
             border: 'none',
-            borderRadius: '10px',
+            borderRadius: '15px',
             cursor: 'pointer',
-            marginTop: '20px'
+            marginTop: '20px',
+            boxShadow: '0 6px 15px rgba(0,0,0,0.3)',
+            fontWeight: 'bold'
           }}
         >
-          {loading ? 'Menghitung...' : 'Cek Jodoh'}
+          {loading ? 'Menghitung...' : 'Cek Sekarang'}
         </button>
       </form>
 
       {result && (
         <div style={{
-          marginTop: '50px',
-          padding: '30px',
-          background: 'rgba(255,255,255,0.9)',
-          borderRadius: '20px',
-          fontSize: '48px',
+          marginTop: '60px',
+          padding: '40px',
+          background: 'rgba(255,255,255,0.95)',
+          borderRadius: '30px',
+          fontSize: '60px',
           fontWeight: 'bold',
-          color: '#ff6b6b'
+          color: '#ff4757',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+          minWidth: '300px',
+          textAlign: 'center'
         }}>
           {result}
         </div>
