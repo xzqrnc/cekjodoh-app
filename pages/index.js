@@ -84,11 +84,11 @@ export default function Home() {
     }
   }, [memoryTimeLeft, memoryTimerActive, memoryMatches]);
 
-  // Format waktu MM:SS
+  // Format waktu MM:SS - ini yang penting!
   const formatTime = (seconds) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `\( {m}: \){s < 10 ? '0' + s : s}`;
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `\( {minutes}: \){secs < 10 ? '0' + secs : secs}`;
   };
 
   // Tic-Tac-Toe
