@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
   const [nama1, setNama1] = useState('');
@@ -16,10 +17,16 @@ export default function Home() {
   const [tttWinner, setTttWinner] = useState(null);
 
   // Memory Match
-  const emojis = ['❤️', '💑', '😘', '💕', '🌹', '💏', '🥰', '💖'];
+  const baseEmojis = ['❤️', '💑', '😘', '💕', '🌹', '💏', '🥰', '💖'];
+  const fullEmojis = [...baseEmojis, ...baseEmojis]; // 16 kartu, 8 pasangan identik
   const [memoryCards, setMemoryCards] = useState([]);
   const [memoryFlipped, setMemoryFlipped] = useState([]);
   const [memoryMatches, setMemoryMatches] = useState(0);
+
+  // Timer untuk Memory Match (3 menit = 180 detik)
+  const [memoryTimeLeft, setMemoryTimeLeft] = useState(180);
+  const [memoryTimerActive, setMemoryTimerActive] = useState(false);
+  const [memoryGameOver, setMemoryGameOver] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,7 +42,7 @@ export default function Home() {
     });
 
     const data = await res.json();
-    setResult(data.result);  // sudah string dengan % dari API
+    setResult(data.result);
     setLoading(false);
   };
 
@@ -49,9 +56,36 @@ export default function Home() {
     setTttBoard(Array(9).fill(null));
     setTttIsXNext(true);
     setTttWinner(null);
-    setMemoryCards(emojis.sort(() => Math.random() - 0.5).map((v, i) => ({ id: i, value: v, flipped: false, matched: false })));
+
+    // Reset Memory Match
+    const shuffled = fullEmojis
+      .sort(() => Math.random() - 0.5)
+      .map((value, index) => ({ id: index, value, flipped: false, matched: false }));
+    setMemoryCards(shuffled);
     setMemoryFlipped([]);
     setMemoryMatches(0);
+    setMemoryTimeLeft(180);
+    setMemoryTimerActive(false);
+    setMemoryGameOver(false);
+  };
+
+  // Timer countdown untuk Memory Match
+  useEffect(() => {
+    if (memoryTimerActive && memoryTimeLeft > 0) {
+      const timer = setTimeout(() => {
+        setMemoryTimeLeft(memoryTimeLeft - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (memoryTimeLeft === 0 && memoryTimerActive) {
+      setMemoryGameOver(true);
+      setMemoryTimerActive(false);
+    }
+  }, [memoryTimeLeft, memoryTimerActive]);
+
+  // Mulai timer saat pilih Memory Match
+  const startMemoryGame = () => {
+    resetGames();
+    setMemoryTimerActive(true);
   };
 
   // Tic-Tac-Toe
@@ -74,9 +108,9 @@ export default function Home() {
     if (winner) setTttWinner(winner);
   };
 
-  // Memory Match (bug fixed: delay balik kartu & deteksi menang)
+  // Memory Match
   const handleMemoryFlip = (id) => {
-    if (memoryFlipped.length === 2 || memoryCards.find(c => c.id === id)?.matched) return;
+    if (memoryFlipped.length === 2 || memoryCards.find(c => c.id === id)?.matched || memoryGameOver) return;
 
     const newCards = memoryCards.map(card => card.id === id ? { ...card, flipped: true } : card);
     setMemoryCards(newCards);
@@ -103,6 +137,13 @@ export default function Home() {
     }
   };
 
+  // Format waktu
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `\( {m}: \){s < 10 ? '0' : ''}${s}`;
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -120,7 +161,7 @@ export default function Home() {
       {!currentGame && !showGamesMenu && (
         <>
           <h1 style={{ fontSize: 'clamp(48px, 12vw, 72px)', fontWeight: 'bold', color: '#f43f5e', marginBottom: '50px' }}>
-            💙 Cek Jodoh 💙
+            Cek Jodoh
           </h1>
 
           <div style={{
@@ -178,10 +219,10 @@ export default function Home() {
           textAlign: 'center',
           boxShadow: '0 0 60px rgba(244, 63, 94, 0.3)'
         }}>
-          <h2 style={{ fontSize: '40px', color: '#f43f5e', marginBottom: '40px' }}>Pilih Game Seru! 🎯</h2>
+          <h2 style={{ fontSize: '40px', color: '#f43f5e', marginBottom: '40px' }}>Pilih Game Seru!</h2>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
             <button onClick={() => { setCurrentGame('ttt'); setShowGamesMenu(false); }} style={{ padding: '40px', fontSize: '24px', background: '#374151', color: '#f3f4f6', borderRadius: '20px', border: 'none' }}>Tic-Tac-Toe</button>
-            <button onClick={() => { setCurrentGame('memory'); setShowGamesMenu(false); resetGames(); }} style={{ padding: '40px', fontSize: '24px', background: '#374151', color: '#f3f4f6', borderRadius: '20px', border: 'none' }}>Memory Match</button>
+            <button onClick={() => { setCurrentGame('memory'); setShowGamesMenu(false); startMemoryGame(); }} style={{ padding: '40px', fontSize: '24px', background: '#374151', color: '#f3f4f6', borderRadius: '20px', border: 'none' }}>Memory Match</button>
           </div>
           <button onClick={backToHome} style={{ marginTop: '60px', fontSize: '60px', background: 'none', border: 'none' }}>❤️</button>
         </div>
@@ -202,12 +243,11 @@ export default function Home() {
         }}>
           <button onClick={backToHome} style={{ position: 'absolute', top: '20px', left: '20px', fontSize: '40px', background: 'none', border: 'none' }}>❤️</button>
 
-          {/* Tic-Tac-Toe */}
           {currentGame === 'ttt' && (
             <>
               <h2 style={{ fontSize: '40px', color: '#f43f5e', marginBottom: '20px' }}>Tic-Tac-Toe</h2>
               <p style={{ fontSize: '18px', color: '#9ca3af', marginBottom: '40px' }}>
-                Bergantian isi kotak. Dapat 3 simbol sejajar (horizontal/vertikal/diagonal) = menang! Kalah = traktir pasangan ya 😘
+                Bergantian isi kotak. Dapat 3 simbol sejajar = menang! Kalah = traktir pasangan ya 😘
               </p>
               <p style={{ fontSize: '22px' }}>Giliran: <strong style={{ color: '#f43f5e' }}>{tttIsXNext ? 'X' : 'O'}</strong></p>
               {tttWinner && <p style={{ fontSize: '34px', color: '#f43f5e', margin: '20px 0' }}>Pemenang: {tttWinner} 🎉</p>}
@@ -224,34 +264,41 @@ export default function Home() {
             </>
           )}
 
-          {/* Memory Match */}
           {currentGame === 'memory' && (
             <>
               <h2 style={{ fontSize: '40px', color: '#f43f5e', marginBottom: '20px' }}>Memory Match</h2>
-              <p style={{ fontSize: '18px', color: '#9ca3af', marginBottom: '40px' }}>
-                Cocokkan pasangan emoji romantis. Klik 2 kartu, kalau cocok tetap terbuka. Yang nemu paling banyak = dapat pelukan ekstra 🥰
+              <p style={{ fontSize: '18px', color: '#9ca3af', marginBottom: '20px' }}>
+                Cocokkan pasangan emoji romantis dalam 3 menit! Kalau habis waktu = kalah 😢
               </p>
-              <p style={{ fontSize: '22px' }}>Pasangan ditemukan: <strong style={{ color: '#f43f5e' }}>{memoryMatches}/4</strong></p>
+              <p style={{ fontSize: '28px', color: memoryTimeLeft <= 30 ? '#f43f5e' : '#f3f4f6', marginBottom: '30px' }}>
+                Waktu tersisa: <strong>{formatTime(memoryTimeLeft)}</strong>
+              </p>
+              <p style={{ fontSize: '22px' }}>Pasangan ditemukan: <strong style={{ color: '#f43f5e' }}>{memoryMatches}/8</strong></p>
+
+              {memoryGameOver && <p style={{ fontSize: '34px', color: '#f43f5e', margin: '30px 0' }}>Waktu Habis! Kalah 😭</p>}
+              {memoryMatches === 8 && !memoryGameOver && <p style={{ fontSize: '34px', color: '#f43f5e', margin: '30px 0' }}>Selamat! Menang dalam waktu ❤️</p>}
+
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', margin: '40px 0' }}>
                 {memoryCards.map(card => (
                   <button
                     key={card.id}
                     onClick={() => handleMemoryFlip(card.id)}
+                    disabled={memoryGameOver || memoryMatches === 8}
                     style={{
-                      height: '80px',
-                      fontSize: '45px',
+                      height: '70px',
+                      fontSize: '40px',
                       background: card.flipped || card.matched ? '#374151' : '#1f2937',
                       color: '#f3f4f6',
                       borderRadius: '16px',
                       border: '3px solid #6b7280',
-                      cursor: 'pointer'
+                      cursor: memoryGameOver || memoryMatches === 8 ? 'not-allowed' : 'pointer',
+                      opacity: memoryGameOver || memoryMatches === 8 ? 0.6 : 1
                     }}
                   >
                     {card.flipped || card.matched ? card.value : '?'}
                   </button>
                 ))}
               </div>
-              {memoryMatches === 4 && <p style={{ fontSize: '34px', color: '#f43f5e', marginTop: '30px' }}>Selamat! Kalian Cocok Banget ❤️</p>}
             </>
           )}
         </div>
