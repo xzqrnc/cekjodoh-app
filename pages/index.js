@@ -5,7 +5,7 @@ export default function Home() {
   const [nama2, setNama2] = useState('');
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showGame, setShowGame] = useState(false);
+  const [isGameMode, setIsGameMode] = useState(false);
 
   // State untuk Tic-Tac-Toe
   const [board, setBoard] = useState(Array(9).fill(null));
@@ -16,7 +16,6 @@ export default function Home() {
     e.preventDefault();
     setLoading(true);
     setResult('');
-    setShowGame(false);
 
     const res = await fetch('/api/calculate', {
       method: 'POST',
@@ -25,7 +24,7 @@ export default function Home() {
     });
 
     const data = await res.json();
-    setResult(`Hasil kecocokan: ${data.result}% 💙`);
+    setResult(`Hasil kecocokan: ${data.result}% 🌊`);
     setLoading(false);
   };
 
@@ -67,9 +66,11 @@ export default function Home() {
         width: '100%',
         height: '80px',
         fontSize: '40px',
-        background: '#fff',
-        border: '3px solid #333',
-        cursor: 'pointer'
+        background: '#0f172a',
+        color: '#00ffff',
+        border: '3px solid #1e3a8a',
+        cursor: 'pointer',
+        boxShadow: '0 0 10px #00ffff'
       }}
       onClick={() => handleClick(i)}
     >
@@ -77,174 +78,213 @@ export default function Home() {
     </button>
   );
 
-  return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(to bottom, #87CEEB, #E0F7FA)',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontFamily: 'Arial, sans-serif',
-      padding: '20px',
-      boxSizing: 'border-box'
-    }}>
-      <h1 style={{
-        fontSize: 'clamp(40px, 10vw, 60px)',
-        color: '#fff',
-        marginBottom: '10px',
-        textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
-        textAlign: 'center'
-      }}>
-        💙 Cek Jodoh 💙
-      </h1>
-      <p style={{
-        fontSize: 'clamp(18px, 5vw, 22px)',
-        color: '#fff',
-        marginBottom: '40px',
-        textAlign: 'center'
-      }}>
-        Masukkan dua nama untuk melihat kecocokan kalian
-      </p>
+  const glowStyle = {
+    fontStyle: 'italic',
+    animation: 'glow 2s ease-in-out infinite alternate'
+  };
 
-      <form onSubmit={handleSubmit} style={{
+  return (
+    <>
+      <style jsx global>{`
+        @keyframes glow {
+          from {
+            text-shadow: 0 0 10px #fff, 0 0 20px #00ffff, 0 0 30px #00ffff;
+          }
+          to {
+            text-shadow: 0 0 20px #fff, 0 0 30px #00ffff, 0 0 40px #00ffff;
+          }
+        }
+      `}</style>
+
+      <div style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(to bottom, #0f172a, #1e3a8a)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        width: '100%',
-        maxWidth: '500px'
+        justifyContent: 'center',
+        fontFamily: 'Arial, sans-serif',
+        padding: '20px',
+        boxSizing: 'border-box',
+        color: '#e0fbfc'
       }}>
-        <input
-          type="text"
-          placeholder="Nama pertama (contoh: sena)"
-          value={nama1}
-          onChange={(e) => setNama1(e.target.value)}
-          required
-          style={{
-            padding: '15px',
-            margin: '10px 0',
-            width: '100%',
-            fontSize: '18px',
-            borderRadius: '15px',
-            border: 'none',
-            boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
-          }}
-        />
-        <input
-          type="text"
-          placeholder="Nama kedua (contoh: icha)"
-          value={nama2}
-          onChange={(e) => setNama2(e.target.value)}
-          required
-          style={{
-            padding: '15px',
-            margin: '10px 0',
-            width: '100%',
-            fontSize: '18px',
-            borderRadius: '15px',
-            border: 'none',
-            boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
-          }}
-        />
+        {/* Tombol Tab Switch */}
         <button
-          type="submit"
-          disabled={loading}
+          onClick={() => { setIsGameMode(!isGameMode); resetGame(); }}
           style={{
-            padding: '15px 50px',
-            fontSize: '20px',
-            background: '#00BFFF',
-            color: 'white',
+            position: 'absolute',
+            top: '20px',
+            padding: '10px 30px',
+            fontSize: '18px',
+            background: '#1e40af',
+            color: '#fff',
             border: 'none',
             borderRadius: '15px',
             cursor: 'pointer',
-            marginTop: '20px',
-            boxShadow: '0 6px 15px rgba(0,0,0,0.3)',
-            fontWeight: 'bold',
-            width: '100%',
-            maxWidth: '300px'
+            boxShadow: '0 0 15px #00ffff'
           }}
         >
-          {loading ? 'Menghitung...' : 'Cek Sekarang'}
+          {isGameMode ? 'Kembali ke Jodoh' : 'Main Game'}
         </button>
-      </form>
 
-      {result && (
-        <>
+        {!isGameMode ? (
+          // TAB JODOH
+          <>
+            <h1 style={{ ...glowStyle, fontSize: 'clamp(40px, 10vw, 60px)', color: '#00ffff', textAlign: 'center' }}>
+              🌊 Cek Jodoh 🌊
+            </h1>
+            <p style={{ fontSize: 'clamp(18px, 5vw, 22px)', marginBottom: '40px', textAlign: 'center' }}>
+              Masukkan dua nama untuk melihat kecocokan kalian
+            </p>
+
+            <form onSubmit={handleSubmit} style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              width: '100%',
+              maxWidth: '500px'
+            }}>
+              <input
+                type="text"
+                placeholder="Nama pertama (contoh: sena)"
+                value={nama1}
+                onChange={(e) => setNama1(e.target.value)}
+                required
+                style={{
+                  padding: '15px',
+                  margin: '10px 0',
+                  width: '100%',
+                  fontSize: '18px',
+                  borderRadius: '15px',
+                  border: '2px solid #00ffff',
+                  background: '#1e293b',
+                  color: '#e0fbfc',
+                  boxShadow: '0 0 10px #00ffff'
+                }}
+              />
+              <input
+                type="text"
+                placeholder="Nama kedua (contoh: icha)"
+                value={nama2}
+                onChange={(e) => setNama2(e.target.value)}
+                required
+                style={{
+                  padding: '15px',
+                  margin: '10px 0',
+                  width: '100%',
+                  fontSize: '18px',
+                  borderRadius: '15px',
+                  border: '2px solid #00ffff',
+                  background: '#1e293b',
+                  color: '#e0fbfc',
+                  boxShadow: '0 0 10px #00ffff'
+                }}
+              />
+              <button
+                type="submit"
+                disabled={loading}
+                style={{
+                  padding: '15px 50px',
+                  fontSize: '20px',
+                  background: '#1e40af',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '15px',
+                  cursor: 'pointer',
+                  marginTop: '20px',
+                  boxShadow: '0 0 20px #00ffff',
+                  width: '100%',
+                  maxWidth: '300px'
+                }}
+              >
+                {loading ? 'Menghitung...' : 'Cek Sekarang'}
+              </button>
+            </form>
+
+            {result && (
+              <>
+                <div style={{
+                  marginTop: '60px',
+                  padding: 'clamp(20px, 8vw, 40px)',
+                  background: 'rgba(15, 23, 42, 0.8)',
+                  borderRadius: '30px',
+                  fontSize: 'clamp(40px, 15vw, 70px)',
+                  fontWeight: 'bold',
+                  color: '#00ffff',
+                  boxShadow: '0 0 30px #00ffff',
+                  textAlign: 'center',
+                  minWidth: '280px',
+                  ...glowStyle
+                }}>
+                  {result}
+                </div>
+
+                {!isGameMode && (
+                  <button
+                    onClick={() => { setIsGameMode(true); resetGame(); }}
+                    style={{
+                      marginTop: '40px',
+                      padding: '15px 30px',
+                      fontSize: '18px',
+                      background: '#1e40af',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '15px',
+                      cursor: 'pointer',
+                      boxShadow: '0 0 20px #00ffff'
+                    }}
+                  >
+                    Main Game Bareng Yuk! 🎮
+                  </button>
+                )}
+              </>
+            )}
+          </>
+        ) : (
+          // TAB GAME
           <div style={{
-            marginTop: '60px',
-            padding: 'clamp(20px, 8vw, 40px)',
-            background: 'rgba(255,255,255,0.95)',
-            borderRadius: '30px',
-            fontSize: 'clamp(40px, 15vw, 70px)',
-            fontWeight: 'bold',
-            color: '#00BFFF',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+            padding: '30px',
+            background: 'rgba(15, 23, 42, 0.9)',
+            borderRadius: '20px',
             textAlign: 'center',
-            minWidth: '280px'
-          }}>
-            {result}
-          </div>
-
-          <button
-            onClick={() => { setShowGame(true); resetGame(); }}
-            style={{
-              marginTop: '40px',
-              padding: '15px 30px',
-              fontSize: '18px',
-              background: '#1E90FF',
-              color: 'white',
-              border: 'none',
-              borderRadius: '15px',
-              cursor: 'pointer',
-              boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
-            }}
-          >
-            Main Game Bareng Yuk! 🎮
-          </button>
-        </>
-      )}
-
-      {showGame && (
-        <div style={{
-          marginTop: '50px',
-          padding: '30px',
-          background: 'rgba(255,255,255,0.9)',
-          borderRadius: '20px',
-          textAlign: 'center',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-          width: '100%',
-          maxWidth: '400px'
-        }}>
-          <h2 style={{ color: '#00BFFF', fontSize: 'clamp(24px, 8vw, 30px)' }}>Tic-Tac-Toe (XOX)</h2>
-          <p style={{ fontSize: '18px' }}>Giliran: <strong>{isXNext ? 'X' : 'O'}</strong></p>
-          {winner && <p style={{ fontSize: '28px', color: '#FF4500' }}>Pemenang: {winner} 🎉</p>}
-          {!winner && board.every(square => square !== null) && <p style={{ fontSize: '28px' }}>Seri! 🤝</p>}
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '10px',
-            margin: '20px auto',
+            boxShadow: '0 0 30px #00ffff',
             width: '100%',
-            maxWidth: '300px',
-            aspectRatio: '1/1'
+            maxWidth: '400px'
           }}>
-            {Array(9).fill(null).map((_, i) => renderSquare(i))}
-          </div>
+            <h2 style={{ ...glowStyle, color: '#00ffff', fontSize: 'clamp(30px, 8vw, 40px)' }}>
+              Tic-Tac-Toe (XOX)
+            </h2>
+            <p style={{ fontSize: '18px' }}>Giliran: <strong style={{ color: '#00ffff' }}>{isXNext ? 'X' : 'O'}</strong></p>
+            {winner && <p style={{ fontSize: '28px', color: '#ff0040', ...glowStyle }}>Pemenang: {winner} 🎉</p>}
+            {!winner && board.every(square => square !== null) && <p style={{ fontSize: '28px', ...glowStyle }}>Seri! 🤝</p>}
 
-          <button onClick={resetGame} style={{
-            padding: '10px 20px',
-            fontSize: '16px',
-            background: '#FF6347',
-            color: 'white',
-            border: 'none',
-            borderRadius: '10px',
-            marginTop: '20px'
-          }}>
-            Reset Game
-          </button>
-        </div>
-      )}
-    </div>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '10px',
+              margin: '20px auto',
+              width: '100%',
+              maxWidth: '300px',
+              aspectRatio: '1/1'
+            }}>
+              {Array(9).fill(null).map((_, i) => renderSquare(i))}
+            </div>
+
+            <button onClick={resetGame} style={{
+              padding: '10px 20px',
+              fontSize: '16px',
+              background: '#dc2626',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '10px',
+              marginTop: '20px',
+              boxShadow: '0 0 15px #ff0040'
+            }}>
+              Reset Game
+            </button>
+          </div>
+        )}
+      </div>
+    </>
   );
           }
